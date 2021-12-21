@@ -1,4 +1,4 @@
-self.window = self // This is required for the jsencrypt library to work within the web worker
+self.window = self
 
 // Import the jsencrypt library
 self.importScripts('https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/2.3.1/jsencrypt.min.js');

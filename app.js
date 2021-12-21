@@ -10,14 +10,11 @@ const io = require("socket.io")(http);
 // Serve web app directory
 app.use(express.static("public"));
 
-// INSERT SOCKET.IO CODE HERE
 /** Manage behavior of each client socket connection */
 io.on("connection", (socket) => {
   console.log(`User Connected - Socket ID ${socket.id}`);
 
   // Store the room that the socket is connected to
-  // If you need to scale the app horizontally, you'll need to store this variable in a persistent store such as Redis.
-  // For more info, see here: https://github.com/socketio/socket.io-redis
   let currentRoom = null;
 
   /** Process a room join request. */

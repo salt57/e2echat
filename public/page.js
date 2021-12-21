@@ -1,4 +1,3 @@
-/** The core Vue instance controlling the UI */
 const vm = new Vue({
   el: "#vue-instance",
   data() {
@@ -29,13 +28,13 @@ const vm = new Vue({
     this.setupSocketListeners();
   },
   methods: {
-    /** Append a notification message in the UI */
+    // Append a notification message in the UI
     addNotification(message) {
       const timestamp = new Date().toLocaleTimeString();
       this.notifications.push({ message, timestamp });
       this.autoscroll(this.$refs.chatContainer)
     },
-    /** Setup Socket.io event listeners */
+    // Setup Socket.io event listeners
     setupSocketListeners() {
       // Automatically join default room on connect
       this.socket.on("connect", () => {
@@ -107,8 +106,8 @@ const vm = new Vue({
       });
     },
 
-    /** Send the current draft message */
-    /** Encrypt and emit the current draft message */
+    // Send the current draft message
+    // Encrypt and emit the current draft message
     async sendMessage() {
       // Don't send message if there is nothing to send
       if (!this.draft || this.draft === "") {
@@ -141,7 +140,7 @@ const vm = new Vue({
       }
     },
 
-    /** Join the specified chatroom */
+    // Join the specified chatroom
     joinRoom() {
       if (this.pendingRoom !== this.currentRoom && this.originPublicKey) {
         this.addNotification(`Connecting to Room - ${this.pendingRoom}`);
@@ -155,12 +154,12 @@ const vm = new Vue({
       }
     },
 
-    /** Add message to UI */
+    // Add message to UI
     addMessage(message) {
       this.messages.push(message);
       this.autoscroll(this.$refs.chatContainer)
     },
-    /** Post a message to the web worker and return a promise that will resolve with the response.  */
+    // Post a message to the web worker and return a promise that will resolve with the response.
     getWebWorkerResponse(messageType, messagePayload) {
       return new Promise((resolve, reject) => {
         // Generate a random message id to identify the corresponding event callback
@@ -187,19 +186,19 @@ const vm = new Vue({
         this.cryptWorker.addEventListener("message", handler);
       });
     },
-    /** Emit the public key to all users in the chatroom */
+    // Emit the public key to all users in the chatroom
     sendPublicKey() {
       if (this.originPublicKey) {
         this.socket.emit("PUBLIC_KEY", this.originPublicKey);
       }
     },
 
-    /** Get key snippet for display purposes */
+    // Get key snippet for display purposes
     getKeySnippet(key) {
       return key.slice(400, 416);
     },
 
-    /** Autoscoll DOM element to bottom */
+    // Autoscoll DOM element to bottom
     autoscroll(element) {
       if (element) {
         element.scrollTop = element.scrollHeight;

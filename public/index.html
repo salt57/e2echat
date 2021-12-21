@@ -2,10 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Open Cryptochat</title>
+    <title>e2e chat</title>
     <meta
       name="description"
-      content="A minimalist, open-source, end-to-end RSA-2048 encrypted chat application."
+      content="end-to-end encrypted chat app"
     />
     <meta
       name="viewport"
@@ -23,7 +23,6 @@
   </head>
   <body>
     <div id="vue-instance">
-      <!-- Add Chat Container Here -->
       <div class="chat-container full-width" ref="chatContainer">
         <div class="message-list">
           <div class="message full-width" v-for="message in messages">
@@ -38,7 +37,6 @@
         </div>
       </div>
       <div class="info-container full-width">
-        <!-- Add Room UI Here -->
         <h1>CHATROOM</h1>
         <div class="room-select">
           <input
@@ -70,7 +68,6 @@
           </div>
         </div>
         <div class="flex-fill"></div>
-        <!-- Add Encryption Key UI Here -->
         <div class="divider"></div>
         <div class="keys full-width">
           <h1>KEYS</h1>
@@ -94,7 +91,6 @@
           </div>
         </div>
       </div>
-      <!-- Add Bottom Bar Here -->
       <div class="bottom-bar full-width">
         >
         <input
