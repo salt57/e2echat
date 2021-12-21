@@ -33,6 +33,7 @@ const vm = new Vue({
     addNotification(message) {
       const timestamp = new Date().toLocaleTimeString();
       this.notifications.push({ message, timestamp });
+      this.autoscroll(this.$refs.chatContainer)
     },
     /** Setup Socket.io event listeners */
     setupSocketListeners() {
@@ -90,6 +91,20 @@ const vm = new Vue({
         );
         this.destinationPublicKey = null;
       });
+
+      // Notify user that the room they are attempting to join is full
+      this.socket.on("ROOM_FULL", () => {
+        this.addNotification(`Cannot join ${this.pendingRoom}, room is full`);
+
+        // Join a random room as a fallback
+        this.pendingRoom = Math.floor(Math.random() * 1000);
+        this.joinRoom();
+      });
+
+      // Notify room that someone attempted to join
+      this.socket.on("INTRUSION_ATTEMPT", () => {
+        this.addNotification("A third user attempted to join the room.");
+      });
     },
 
     /** Send the current draft message */
@@ -126,14 +141,24 @@ const vm = new Vue({
       }
     },
 
-    /** Join the chatroom */
+    /** Join the specified chatroom */
     joinRoom() {
-      this.socket.emit("JOIN");
+      if (this.pendingRoom !== this.currentRoom && this.originPublicKey) {
+        this.addNotification(`Connecting to Room - ${this.pendingRoom}`);
+
+        // Reset room state variables
+        this.messages = [];
+        this.destinationPublicKey = null;
+
+        // Emit room join request.
+        this.socket.emit("JOIN", this.pendingRoom);
+      }
     },
 
     /** Add message to UI */
     addMessage(message) {
       this.messages.push(message);
+      this.autoscroll(this.$refs.chatContainer)
     },
     /** Post a message to the web worker and return a promise that will resolve with the response.  */
     getWebWorkerResponse(messageType, messagePayload) {
@@ -172,6 +197,13 @@ const vm = new Vue({
     /** Get key snippet for display purposes */
     getKeySnippet(key) {
       return key.slice(400, 416);
+    },
+
+    /** Autoscoll DOM element to bottom */
+    autoscroll(element) {
+      if (element) {
+        element.scrollTop = element.scrollHeight;
+      }
     },
   },
 });

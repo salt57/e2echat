@@ -39,6 +39,24 @@
       </div>
       <div class="info-container full-width">
         <!-- Add Room UI Here -->
+        <h1>CHATROOM</h1>
+        <div class="room-select">
+          <input
+            type="text"
+            class="full-width"
+            placeholder="Room Name"
+            id="room-input"
+            v-model="pendingRoom"
+            @keyup.enter="joinRoom()"
+          />
+          <input
+            class="yellow-button full-width"
+            type="submit"
+            v-on:click="joinRoom()"
+            value="JOIN"
+          />
+        </div>
+        <div class="divider"></div>
         <div class="notification-list" ref="notificationContainer">
           <h1>NOTIFICATION LOG</h1>
           <div
