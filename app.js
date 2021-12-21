@@ -31,7 +31,7 @@ io.on("connection", (socket) => {
 
   /** Broadcast a received message to the room */
   socket.on("MESSAGE", (msg) => {
-    console.log(`New Message - ${msg}`);
+    console.log(`New Message - ${msg.text}`);
     socket.broadcast.to(currentRoom).emit("MESSAGE", msg);
   });
 

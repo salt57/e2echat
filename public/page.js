@@ -47,9 +47,19 @@ const vm = new Vue({
         this.addNotification("Lost Connection")
       );
 
-      // Display message when recieved
-      this.socket.on("MESSAGE", (message) => {
-        this.addMessage(message);
+      // Decrypt and display message when received
+      this.socket.on("MESSAGE", async (message) => {
+        // Only decrypt messages that were encrypted with the user's public key
+        if (message.recipient === this.originPublicKey) {
+          // Decrypt the message text in the webworker thread
+          message.text = await this.getWebWorkerResponse(
+            "decrypt",
+            message.text
+          );
+
+          // Instantly add (unencrypted) message to local UI
+          this.addMessage(message);
+        }
       });
 
       // When a user joins the current room, send them your public key
@@ -83,22 +93,37 @@ const vm = new Vue({
     },
 
     /** Send the current draft message */
-    sendMessage() {
+    /** Encrypt and emit the current draft message */
+    async sendMessage() {
       // Don't send message if there is nothing to send
       if (!this.draft || this.draft === "") {
         return;
       }
 
-      const message = this.draft;
+      // Use immutable.js to avoid unintended side-effects.
+      let message = Immutable.Map({
+        text: this.draft,
+        recipient: this.destinationPublicKey,
+        sender: this.originPublicKey,
+      });
 
       // Reset the UI input draft text
       this.draft = "";
 
-      // Instantly add message to local UI
-      this.addMessage(message);
+      // Instantly add (unencrypted) message to local UI
+      this.addMessage(message.toObject());
 
-      // Emit the message
-      this.socket.emit("MESSAGE", message);
+      if (this.destinationPublicKey) {
+        // Encrypt message with the public key of the other user
+        const encryptedText = await this.getWebWorkerResponse("encrypt", [
+          message.get("text"),
+          this.destinationPublicKey,
+        ]);
+        const encryptedMsg = message.set("text", encryptedText);
+
+        // Emit the encrypted message
+        this.socket.emit("MESSAGE", encryptedMsg.toObject());
+      }
     },
 
     /** Join the chatroom */
